@@ -7,7 +7,7 @@
   "integration_type": "device",
   "iot_class": "local_push",
   "issue_tracker": "https://github.com/alexdelprete/ha-droplet-plus/issues",
-  "requirements": ["pydroplet==2.3.4"],
-  "version": "0.1.0",
+  "requirements": ["pydroplet~=2.3.4"],
+  "version": "0.1.0-beta.1",
   "zeroconf": ["_droplet._tcp.local."]
 }

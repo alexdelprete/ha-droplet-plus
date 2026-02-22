@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Final
 
 DOMAIN: Final = "droplet_plus"
-VERSION: Final = "0.1.0"
+VERSION: Final = "0.1.0-beta.1"
 MANUFACTURER: Final = "Hydrific"
 
 # Configuration keys (CONF_HOST, CONF_PORT, CONF_TOKEN from homeassistant.const)
