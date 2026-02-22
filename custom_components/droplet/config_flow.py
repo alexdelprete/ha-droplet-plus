@@ -5,8 +5,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from pydroplet import DropletDiscovery
-from pydroplet.connection import DropletConnection
+from pydroplet.droplet import DropletConnection, DropletDiscovery
 import voluptuous as vol
 
 from homeassistant.components.zeroconf import ZeroconfServiceInfo

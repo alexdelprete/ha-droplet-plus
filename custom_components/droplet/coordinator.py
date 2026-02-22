@@ -9,7 +9,7 @@ import logging
 import time
 from typing import Any
 
-from pydroplet import Droplet
+from pydroplet.droplet import Droplet
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_PORT, CONF_TOKEN
