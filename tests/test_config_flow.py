@@ -11,10 +11,10 @@ from custom_components.droplet.const import (
     DOMAIN,
 )
 from homeassistant import config_entries
-from homeassistant.components.zeroconf import ZeroconfServiceInfo
 from homeassistant.const import CONF_HOST, CONF_PORT, CONF_TOKEN
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.helpers.service_info.zeroconf import ZeroconfServiceInfo
 
 from .conftest import TEST_DEVICE_ID, TEST_HOST, TEST_PORT, TEST_TOKEN
 
