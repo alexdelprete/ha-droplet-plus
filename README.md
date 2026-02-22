@@ -3,11 +3,11 @@
 <!-- BEGIN SHARED:repo-sync:badges -->
 <!-- Synced by repo-sync on 2026-02-20 -->
 
-[![GitHub Release](https://img.shields.io/github/v/release/alexdelprete/ha-droplet?style=for-the-badge)](https://github.com/alexdelprete/ha-droplet/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/alexdelprete/ha-droplet-plus?style=for-the-badge)](https://github.com/alexdelprete/ha-droplet-plus/releases)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-donate-yellow?style=for-the-badge&logo=buy-me-a-coffee)](https://www.buymeacoffee.com/alexdelprete)
-[![Tests](https://img.shields.io/github/actions/workflow/status/alexdelprete/ha-droplet/test.yml?style=for-the-badge&label=Tests)](https://github.com/alexdelprete/ha-droplet/actions/workflows/test.yml)
-[![Coverage](https://img.shields.io/codecov/c/github/alexdelprete/ha-droplet?style=for-the-badge)](https://codecov.io/gh/alexdelprete/ha-droplet)
-[![GitHub Downloads](https://img.shields.io/github/downloads/alexdelprete/ha-droplet/total?style=for-the-badge)](https://github.com/alexdelprete/ha-droplet/releases)
+[![Tests](https://img.shields.io/github/actions/workflow/status/alexdelprete/ha-droplet-plus/test.yml?style=for-the-badge&label=Tests)](https://github.com/alexdelprete/ha-droplet-plus/actions/workflows/test.yml)
+[![Coverage](https://img.shields.io/codecov/c/github/alexdelprete/ha-droplet-plus?style=for-the-badge)](https://codecov.io/gh/alexdelprete/ha-droplet-plus)
+[![GitHub Downloads](https://img.shields.io/github/downloads/alexdelprete/ha-droplet-plus/total?style=for-the-badge)](https://github.com/alexdelprete/ha-droplet-plus/releases)
 
 <!-- END SHARED:repo-sync:badges -->
 
@@ -28,13 +28,13 @@ A Home Assistant custom integration for Droplet.
 1. Click on "Integrations"
 1. Click the three dots menu in the top right corner
 1. Select "Custom repositories"
-1. Add `https://github.com/alexdelprete/ha-droplet` as an Integration
+1. Add `https://github.com/alexdelprete/ha-droplet-plus` as an Integration
 1. Click "Download" and install the integration
 1. Restart Home Assistant
 
 ### Manual Installation
 
-1. Download the latest release from [GitHub Releases](https://github.com/alexdelprete/ha-droplet/releases)
+1. Download the latest release from [GitHub Releases](https://github.com/alexdelprete/ha-droplet-plus/releases)
 1. Extract the `custom_components/droplet_plus` folder
 1. Copy it to your Home Assistant `config/custom_components/` directory
 1. Restart Home Assistant

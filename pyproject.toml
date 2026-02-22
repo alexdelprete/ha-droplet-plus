@@ -1,5 +1,5 @@
 [project]
-name = "ha-droplet"
+name = "ha-droplet-plus"
 version = "0.1.0"
 description = "Home Assistant custom integration for Droplet"
 readme = "README.md"
@@ -8,8 +8,8 @@ requires-python = ">=3.13.2"
 authors = [{ name = "alexdelprete" }]
 
 [project.urls]
-"Homepage" = "https://github.com/alexdelprete/ha-droplet"
-"Bug Tracker" = "https://github.com/alexdelprete/ha-droplet/issues"
+"Homepage" = "https://github.com/alexdelprete/ha-droplet-plus"
+"Bug Tracker" = "https://github.com/alexdelprete/ha-droplet-plus/issues"
 
 [project.optional-dependencies]
 dev = [
