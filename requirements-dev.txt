@@ -2,7 +2,6 @@
 # pytest-homeassistant-custom-component is installed first, then these are layered on top
 homeassistant>=2024.12.0
 homeassistant-stubs
-pydroplet==2.3.4
 mdformat
 mdformat-gfm
 pre-commit

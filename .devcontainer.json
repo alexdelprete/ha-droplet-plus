@@ -1,5 +1,5 @@
 {
-    "name": "Droplet",
+    "name": "Droplet Plus",
     "image": "mcr.microsoft.com/devcontainers/python:3.13-bullseye",
     "forwardPorts": [8123],
     "customizations": {

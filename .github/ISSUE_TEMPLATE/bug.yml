@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report a bug with the Droplet integration
+description: Report a bug with the Droplet Plus integration
 labels: ["bug"]
 body:
   - type: markdown
