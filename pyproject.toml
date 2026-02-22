@@ -91,6 +91,8 @@ python-platform = "linux"
 # Promote warnings to errors for strictness
 deprecated = "error"
 redundant-cast = "error"
+# Third-party libs (pydroplet, zeroconf) lack py.typed / complete stubs
+unresolved-import = "warn"
 
 [tool.ruff]
 line-length = 100

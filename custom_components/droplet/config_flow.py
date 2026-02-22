@@ -10,7 +10,12 @@ from pydroplet.connection import DropletConnection
 import voluptuous as vol
 
 from homeassistant.components.zeroconf import ZeroconfServiceInfo
-from homeassistant.config_entries import ConfigFlow, ConfigFlowResult, OptionsFlowWithConfigEntry
+from homeassistant.config_entries import (
+    ConfigEntry,
+    ConfigFlow,
+    ConfigFlowResult,
+    OptionsFlowWithConfigEntry,
+)
 from homeassistant.const import CONF_HOST, CONF_PORT, CONF_TOKEN
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import (
@@ -57,7 +62,7 @@ class DropletConfigFlow(ConfigFlow, domain=DOMAIN):
 
     @staticmethod
     def async_get_options_flow(
-        config_entry: ConfigFlow,
+        config_entry: ConfigEntry,
     ) -> DropletOptionsFlow:
         """Get the options flow for this handler."""
         return DropletOptionsFlow(config_entry)
@@ -117,12 +122,15 @@ class DropletConfigFlow(ConfigFlow, domain=DOMAIN):
         user_input: dict[str, Any] | None = None,
     ) -> ConfigFlowResult:
         """Handle pairing code entry for discovered device."""
+        host = self._host  # Set by async_step_zeroconf
+        if host is None:
+            return self.async_abort(reason="unknown")
         errors: dict[str, str] = {}
 
         if user_input is not None:
             token = normalize_pairing_code(user_input[CONF_TOKEN])
 
-            device_id = await self._async_try_connect(self._host, self._port, token, errors)
+            device_id = await self._async_try_connect(host, self._port, token, errors)
             if device_id:
                 await self.async_set_unique_id(device_id)
                 self._abort_if_unique_id_configured()
@@ -141,7 +149,7 @@ class DropletConfigFlow(ConfigFlow, domain=DOMAIN):
                 }
             ),
             errors=errors,
-            description_placeholders={"host": self._host},
+            description_placeholders={"host": host},
         )
 
     async def async_step_options(
