@@ -11,6 +11,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import DropletConfigEntry
 from .const import (
@@ -40,7 +41,7 @@ def _get_tariff_descriptions(
     hass: HomeAssistant,
 ) -> tuple[DropletNumberEntityDescription, ...]:
     """Build number entity descriptions with locale-aware tariff unit."""
-    if hass.config.units.is_metric:
+    if hass.config.units is METRIC_SYSTEM:
         tariff_unit = f"{hass.config.currency}/m\u00b3"
     else:
         tariff_unit = f"{hass.config.currency}/gal"

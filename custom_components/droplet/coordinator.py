@@ -24,6 +24,7 @@ from homeassistant.helpers.issue_registry import (
 from homeassistant.helpers.storage import Store
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
+from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from .const import (
     CONF_DEVICE_ID,
@@ -277,7 +278,7 @@ class DropletCoordinator(DataUpdateCoordinator[None]):
     @property
     def is_metric(self) -> bool:
         """Return True if the HA instance uses metric units."""
-        return self.hass.config.units.is_metric
+        return self.hass.config.units is METRIC_SYSTEM
 
     def _cost_for_volume(self, volume_l: float) -> float:
         """Calculate cost for a volume in liters using the configured tariff."""

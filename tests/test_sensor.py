@@ -17,13 +17,16 @@ async def test_flow_rate_sensor(
     mock_setup_entry: MockConfigEntry,
     mock_droplet: MagicMock,
 ) -> None:
-    """Test water flow rate sensor."""
-    state = hass.states.get(f"sensor.droplet_{mock_setup_entry.unique_id}_water_flow_rate")
-    if state is None:
-        # Try entity_id without unique_id prefix
-        states = [s for s in hass.states.async_all("sensor") if "flow_rate" in s.entity_id]
-        assert len(states) > 0
-        state = states[0]
+    """Test water flow rate sensor after a device update."""
+    coordinator = mock_setup_entry.runtime_data
+
+    # Trigger a device update so the coordinator captures the mock values
+    coordinator._on_update(None)
+    await hass.async_block_till_done()
+
+    states = [s for s in hass.states.async_all("sensor") if "flow_rate" in s.entity_id]
+    assert len(states) > 0
+    state = states[0]
     assert state.state == "2.5"
 
 

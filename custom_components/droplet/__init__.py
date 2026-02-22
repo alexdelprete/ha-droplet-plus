@@ -45,7 +45,4 @@ async def async_setup_entry(hass: HomeAssistant, entry: DropletConfigEntry) -> b
 
 async def async_unload_entry(hass: HomeAssistant, entry: DropletConfigEntry) -> bool:
     """Unload a config entry."""
-    if unload_ok := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
-        await entry.runtime_data.async_shutdown()
-
-    return unload_ok
+    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
