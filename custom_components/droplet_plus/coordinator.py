@@ -36,13 +36,13 @@ from .const import (
     DOMAIN,
     EVENT_WATER_LEAK_CLEARED,
     EVENT_WATER_LEAK_DETECTED,
+    FW_VERSION_TIMEOUT,
     L_TO_GAL,
     L_TO_M3,
     ML_TO_L,
     SAVE_INTERVAL,
     STORAGE_KEY,
     STORAGE_VERSION,
-    VERSION_TIMEOUT,
 )
 from .helpers import (
     compute_average,
@@ -432,7 +432,7 @@ class DropletCoordinator(DataUpdateCoordinator[None]):
         )
 
         # Wait for device metadata
-        for _ in range(VERSION_TIMEOUT * 10):
+        for _ in range(FW_VERSION_TIMEOUT * 10):
             if self._droplet.version_info_available():
                 break
             await asyncio.sleep(0.1)

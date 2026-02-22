@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Final
 
-DOMAIN: Final = "droplet_plus"
-VERSION: Final = "0.1.0-beta.1"
+DOMAIN = "droplet_plus"
+VERSION = "0.1.0-beta.1"
 MANUFACTURER: Final = "Hydrific"
 
 # Configuration keys (CONF_HOST, CONF_PORT, CONF_TOKEN from homeassistant.const)
@@ -21,7 +21,7 @@ DEFAULT_WATER_LEAK_THRESHOLD: Final = 0.0
 
 # Connection
 CONNECT_DELAY: Final = 5
-VERSION_TIMEOUT: Final = 5
+FW_VERSION_TIMEOUT: Final = 5
 
 # Storage
 STORAGE_VERSION: Final = 1

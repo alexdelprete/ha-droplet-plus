@@ -24,15 +24,14 @@ jobs:
           TAG_VERSION="${{ github.event.release.tag_name }}"
           TAG_VERSION="${TAG_VERSION#v}"
 
-          # Extract version from manifest.json (tr -d '\r' strips Windows CRLF)
+          # Extract version from manifest.json
           MANIFEST_VERSION=$(yq -r '.version' \
-            "${{ github.workspace }}/custom_components/droplet_plus/manifest.json" \
-            | tr -d '\r')
+            "${{ github.workspace }}/custom_components/droplet_plus/manifest.json")
 
-          # Extract VERSION from const.py (tr -d '\r' strips Windows CRLF)
-          CONST_VERSION=$(grep -E "^VERSION" \
+          # Extract VERSION from const.py
+          CONST_VERSION=$(grep -E "^VERSION = " \
             "${{ github.workspace }}/custom_components/droplet_plus/const.py" \
-            | sed 's/.*"\(.*\)"/\1/' | tr -d '\r')
+            | sed 's/VERSION = "\(.*\)"/\1/')
 
           echo "Tag version:      $TAG_VERSION"
           echo "manifest.json:    $MANIFEST_VERSION"
