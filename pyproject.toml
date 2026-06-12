@@ -19,7 +19,7 @@ dev = [
     "mdformat-gfm",
     "mypy",
     "pre-commit",
-    "pydroplet==2.3.4",
+    "pydroplet==2.4.0",
     "pymarkdownlnt",
     "ruff>=0.8.0",
     "ty",
@@ -42,7 +42,7 @@ lint = [
     "ty",
 ]
 pytest = [
-    "pydroplet==2.3.4",
+    "pydroplet==2.4.0",
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
     "pytest-cov",
