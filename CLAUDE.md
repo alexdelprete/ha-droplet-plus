@@ -291,7 +291,7 @@ These repos are standardized on the **Python 3.14+** toolchain:
 - `pyproject.toml`: `requires-python = ">=3.14.2"` (matches Home Assistant
   core's own floor)
 - `[tool.ruff]`: `target-version = "py314"`
-- Minimum supported Home Assistant core: **2024.12.0** — the
+- Minimum supported Home Assistant core: **2026.3.0** — the
   first HA release requiring Python 3.14.2. `hacs.json` is rendered from
   the same value, so HACS users on older HA don't see updates.
 

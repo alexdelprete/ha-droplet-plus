@@ -1,6 +1,6 @@
 # Dev dependencies (excluding pytest-homeassistant-custom-component which is installed separately)
 # pytest-homeassistant-custom-component is installed first, then these are layered on top
-homeassistant>=2024.12.0
+homeassistant>=2026.3.0
 homeassistant-stubs
 mdformat
 mdformat-gfm
