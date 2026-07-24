@@ -1,7 +1,7 @@
 # Droplet Plus
 
 <!-- BEGIN SHARED:repo-sync:badges -->
-<!-- Synced by repo-sync on 2026-02-22 -->
+<!-- Synced by repo-sync on 2026-07-24 -->
 
 [![GitHub Release](https://img.shields.io/github/v/release/alexdelprete/ha-droplet-plus?style=for-the-badge)](https://github.com/alexdelprete/ha-droplet-plus/releases)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-donate-yellow?style=for-the-badge&logo=buy-me-a-coffee)](https://www.buymeacoffee.com/alexdelprete)
@@ -28,7 +28,7 @@ usage monitoring, consumption tracking, cost estimates, and leak detection.
 - Diagnostics support
 
 <!-- BEGIN SHARED:repo-sync:installation -->
-<!-- Synced by repo-sync on 2026-02-22 -->
+<!-- Synced by repo-sync on 2026-07-24 -->
 
 ## Installation
 
@@ -61,7 +61,7 @@ usage monitoring, consumption tracking, cost estimates, and leak detection.
 1. Optionally configure water tariff and leak threshold in the integration options
 
 <!-- BEGIN SHARED:repo-sync:contributing -->
-<!-- Synced by repo-sync on 2026-02-22 -->
+<!-- Synced by repo-sync on 2026-07-24 -->
 
 ## Contributing
 
@@ -70,7 +70,7 @@ Contributions are welcome! Please follow these steps:
 1. Fork the repository
 1. Create a feature branch (`git checkout -b feature/my-feature`)
 1. Make your changes
-1. Run linting: `uvx pre-commit run --all-files`
+1. Run linting: `pre-commit run --all-files`
 1. Commit your changes (`git commit -m "feat: add my feature"`)
 1. Push to your branch (`git push origin feature/my-feature`)
 1. Open a Pull Request
@@ -80,7 +80,7 @@ Please ensure all CI checks pass before requesting a review.
 <!-- END SHARED:repo-sync:contributing -->
 
 <!-- BEGIN SHARED:repo-sync:license -->
-<!-- Synced by repo-sync on 2026-02-22 -->
+<!-- Synced by repo-sync on 2026-07-24 -->
 
 ## License
 

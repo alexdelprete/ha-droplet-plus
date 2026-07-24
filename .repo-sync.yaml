@@ -51,6 +51,8 @@ vars:
 copy_files:
   - .gitattributes
   - .pymarkdownlint.json
+  - .python-version
+  - Dockerfile.dev
   - .github/workflows/dbautomerge.yml
   - .github/FUNDING.yml
   - LICENSE

@@ -106,7 +106,25 @@ In addition to the shared Do's and Don'ts below:
 - (Add integration-specific restrictions here)
 
 <!-- BEGIN SHARED:repo-sync -->
-<!-- Synced by repo-sync on 2026-03-18 -->
+<!-- Synced by repo-sync on 2026-07-24 -->
+
+<!--
+==============================================================================
+⚠️  TEMPLATE-MANAGED ZONE — DO NOT EDIT BETWEEN BEGIN SHARED AND END SHARED.
+
+This entire region is auto-generated from
+ha-integration-template/templates/markers/CLAUDE_SHARED.md.j2 via
+`repo-sync.py`. Edits between the marker lines are silently overwritten
+on the next sync.
+
+To change shared guidance:
+  1. Edit CLAUDE_SHARED.md.j2 in ha-integration-template
+  2. Sync downstream: `python repo-sync.py sync <consumer>`
+
+Integration-specific guidance belongs OUTSIDE the markers (above
+BEGIN SHARED or below END SHARED).
+==============================================================================
+-->
 
 ## Context7 for Documentation
 
@@ -266,6 +284,25 @@ Runtime tuning parameters: scan_interval, timeout, etc. Use OptionsFlowWithReloa
 - Use stable identifiers (MAC address, serial number) — not connection parameters (IP, hostname)
 - Config entry type alias: `type MyConfigEntry = ConfigEntry[RuntimeData]`
 
+## Python Version & HA Baseline
+
+These repos are standardized on the **Python 3.14+** toolchain:
+
+- `pyproject.toml`: `requires-python = ">=3.14.2"` (matches Home Assistant
+  core's own floor)
+- `[tool.ruff]`: `target-version = "py314"`
+- Minimum supported Home Assistant core: **2024.12.0** — the
+  first HA release requiring Python 3.14.2. `hacs.json` is rendered from
+  the same value, so HACS users on older HA don't see updates.
+
+**Implication for source code**: code in these repos may use 3.14-only
+syntax (e.g. PEP 758's parenthesis-free `except A, B:`) and is **not**
+backwards-compatible with Python 3.13. Ruff with `target-version = "py314"`
+will actively *rewrite* `except (A, B):` into the parenthesis-free form —
+which is a SyntaxError on Python 3.13. If a contributor's toolchain
+regresses to 3.13, expect lint-fixes from these repos to fail to parse
+locally until the toolchain is re-aligned.
+
 ## Dependencies Best Practices
 
 ### Dependency Update Checklist
@@ -293,6 +330,12 @@ feat(api): implement new feature
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
+> **NEVER put a GitHub issue-closing keyword in a commit message.**
+> `close`/`closes`/`closed`, `fix`/`fixes`/`fixed`, `resolve`/`resolves`/`resolved`
+> followed by `#N` auto-close that issue the moment the commit lands on the default
+> branch. Reference issues with a neutral phrase only — "Refs #N", "Reported in #N",
+> "Addresses #N". Issues are closed manually by the user, never by automation.
+
 ### Branch Strategy
 
 - Default branch (`main` or `master`) = next release
@@ -319,8 +362,17 @@ All hooks use `language: system` (local tools) with `verbose: true` for visibili
 > This is a hard rule - no exceptions. Never commit without passing all checks.
 
 ```bash
-uvx pre-commit run --all-files
+pre-commit run --all-files
 ```
+
+> Use `pre-commit` directly, **not** `uvx pre-commit`. The `ty` hook
+> resolves the interpreter at runtime via `$(which python)` to match the
+> devcontainer venv. `uvx` would provision its own ephemeral Python 3.14
+> first on PATH, and that env doesn't have Home Assistant installed —
+> `ty` would false-fail with unresolved-import errors even though the
+> code is fine. The git commit hook and CI's lint workflow already use
+> the venv-installed `pre-commit`, so plain `pre-commit run` matches
+> their behavior exactly.
 
 Or run individual tools:
 
@@ -379,7 +431,15 @@ This integration tracks [Home Assistant Quality Scale][qs] rules in `quality_sca
 > **STOP: NEVER create git tags or GitHub releases without explicit user command.**
 > This is a hard rule. Always stop after commit/push and wait for user instruction.
 
-**Published releases are FROZEN** - Never modify documentation for released versions.
+**Published releases are FROZEN** - Never modify the git tag, the ZIP asset, or the
+`docs/releases/vX.Y.Z.md` file in a way that changes the meaning of what shipped.
+
+The GitHub *release body* (what shows on the release page) may be edited via
+`gh release edit vX.Y.Z --notes-file docs/releases/vX.Y.Z.md` to fix typos, add
+cross-references to companion files that landed on `main` shortly after the release,
+or clarify scope — as long as the edit doesn't misrepresent what's actually in the
+released ZIP. When you do this, also update the matching `docs/releases/vX.Y.Z.md` so
+the file and the live release body stay in sync.
 
 **Master branch = Next Release** - All commits target the next version with version bumped
 in manifest.json and const.py.
@@ -409,7 +469,7 @@ in manifest.json and const.py.
 | 1    | Edit           | Update `CHANGELOG.md` with version summary                              |
 | 2    | Write          | Create `docs/releases/vX.Y.Z.md` release notes (see format below)      |
 | 3    | Edit           | Ensure `manifest.json` and `const.py` have correct version              |
-| 4    | Bash           | Run linting: `uvx pre-commit run --all-files`                           |
+| 4    | Bash           | Run linting: `pre-commit run --all-files`                               |
 | 5    | Bash           | `git add . && git commit -m "..."`                                      |
 | 6    | Bash           | `git push`                                                              |
 | 7    | **STOP**       | Wait for user "tag and release" command                                 |
@@ -521,11 +581,16 @@ The coverage percentage is the last column in the TOTAL line.
 
 ### Issue References in Release Notes
 
-When a release fixes a specific GitHub issue:
+When a release addresses a specific GitHub issue:
 
-- Reference the issue number in release notes (e.g., "Fixes #42")
-- Thank the user who opened the issue by name and GitHub handle
-- **NEVER close the issue** — the user will do it manually
+- Reference the issue number, but **NEVER use a GitHub closing keyword** —
+  `close`/`closes`/`closed`, `fix`/`fixes`/`fixed`, `resolve`/`resolves`/`resolved`
+  followed by `#N` — anywhere in commit messages, release notes, the GitHub release
+  body, or PR descriptions. Those keywords auto-close the issue when the commit lands
+  on the default branch. Use a neutral phrase instead: "Reported in #42",
+  "Addresses #42", "Refs #42".
+- Thank the user who opened the issue by name and GitHub handle.
+- **NEVER close the issue** — the user will do it manually.
 
 ### After Publishing a Release
 
@@ -557,7 +622,7 @@ When a release fixes a specific GitHub issue:
 
 **DO:**
 
-- Run `uvx pre-commit run --all-files` before EVERY commit
+- Run `pre-commit run --all-files` before EVERY commit (NOT `uvx pre-commit` — see Pre-Commit Checks section for why)
 - Read CLAUDE.md at session start
 - Use `runtime_data` for data storage (not `hass.data[DOMAIN]`)
 - Use `@callback` decorator for message handlers
@@ -581,6 +646,16 @@ When a release fixes a specific GitHub issue:
 - Close GitHub issues without explicit user instruction
 - Log manually what HA logs automatically (coordinator errors, ConfigEntryNotReady)
 - Create documentation files without user request
+
+<!--
+==============================================================================
+⚠️  END OF TEMPLATE-MANAGED ZONE.
+
+The END SHARED marker line appears below this comment. Anything you add
+BELOW the END SHARED marker is integration-specific and safe to edit —
+it will not be touched by `repo-sync.py`.
+==============================================================================
+-->
 
 <!-- END SHARED:repo-sync -->
 
