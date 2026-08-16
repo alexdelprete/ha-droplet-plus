@@ -28,10 +28,11 @@ jobs:
           MANIFEST_VERSION=$(yq -r '.version' \
             "${{ github.workspace }}/custom_components/droplet_plus/manifest.json")
 
-          # Extract VERSION from const.py
-          CONST_VERSION=$(grep -E "^VERSION: Final = " \
+          # Extract VERSION from const.py (handles both `VERSION = "..."`
+          # and the typed `VERSION: Final = "..."` form)
+          CONST_VERSION=$(grep -E '^VERSION(: Final)? = ' \
             "${{ github.workspace }}/custom_components/droplet_plus/const.py" \
-            | sed 's/VERSION: Final = "\(.*\)"/\1/')
+            | sed 's/.* = "\(.*\)"/\1/')
 
           echo "Tag version:      $TAG_VERSION"
           echo "manifest.json:    $MANIFEST_VERSION"
