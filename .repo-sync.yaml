@@ -43,7 +43,7 @@ vars:
   ruff_tests_extra_ignores: []
 
   # ── Extras ──
-  requirements_extra_deps: []
+  requirements_extra_deps: ["pydroplet==2.4.0"]
   gitignore_extra: []
   bug_extra_fields: []
   config_extra_links: []
