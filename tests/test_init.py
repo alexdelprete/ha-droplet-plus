@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
@@ -31,6 +31,23 @@ async def test_setup_entry_registers_device(
     assert device is not None
     assert device.manufacturer == "LIXIL"
     assert device.model == "Droplet"
+
+
+async def test_setup_entry_not_ready(
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+    mock_droplet: MagicMock,
+) -> None:
+    """Test setup failure raises ConfigEntryNotReady and schedules a retry."""
+    with patch(
+        "custom_components.droplet_plus.DropletCoordinator.async_setup",
+        side_effect=TimeoutError("connection timed out"),
+    ):
+        mock_config_entry.add_to_hass(hass)
+        await hass.config_entries.async_setup(mock_config_entry.entry_id)
+        await hass.async_block_till_done()
+
+    assert mock_config_entry.state is ConfigEntryState.SETUP_RETRY
 
 
 async def test_unload_entry(

@@ -2,15 +2,25 @@
 
 from __future__ import annotations
 
+import asyncio
 from datetime import timedelta
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.droplet_plus.const import EVENT_WATER_LEAK_CLEARED, EVENT_WATER_LEAK_DETECTED
+from custom_components.droplet_plus.const import (
+    EVENT_WATER_LEAK_CLEARED,
+    EVENT_WATER_LEAK_DETECTED,
+    L_TO_GAL,
+)
+from custom_components.droplet_plus.coordinator import DropletCoordinator
+from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
 from homeassistant.util import dt as dt_util
+from homeassistant.util.unit_system import US_CUSTOMARY_SYSTEM
+
+from .conftest import TEST_DEVICE_ID
 
 
 async def test_on_update_captures_delta(
@@ -341,3 +351,203 @@ async def test_accumulators_registered_on_setup(
     assert "monthly" in registered_names
     assert "yearly" in registered_names
     assert "lifetime" in registered_names
+
+
+async def test_identity_properties(
+    hass: HomeAssistant,
+    mock_setup_entry: MockConfigEntry,
+) -> None:
+    """Test device_id and volume_last_reset properties."""
+    coordinator = mock_setup_entry.runtime_data
+    assert coordinator.device_id == TEST_DEVICE_ID
+    assert coordinator.volume_last_reset is not None
+
+
+async def test_cost_calculation_us_customary(
+    hass: HomeAssistant,
+    mock_setup_entry: MockConfigEntry,
+) -> None:
+    """Test cost calculation uses gallons on US customary installs."""
+    hass.config.units = US_CUSTOMARY_SYSTEM
+    coordinator = mock_setup_entry.runtime_data
+
+    # Set tariff to 5.0 per gallon
+    hass.config_entries.async_update_entry(
+        mock_setup_entry,
+        options={**mock_setup_entry.options, "water_tariff": 5.0},
+    )
+
+    # Simulate 1 gallon of consumption via baseline (in liters)
+    coordinator._baseline_daily = L_TO_GAL
+    assert coordinator.daily_cost == pytest.approx(5.0)
+
+
+async def test_setup_waits_for_metadata(
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+    mock_droplet: MagicMock,
+) -> None:
+    """Test setup polls until device metadata becomes available."""
+    availability = iter([False, True])
+    mock_droplet.version_info_available.side_effect = lambda: next(availability, True)
+
+    mock_config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(mock_config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert mock_config_entry.state is ConfigEntryState.LOADED
+
+
+async def test_setup_metadata_timeout(
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+    mock_droplet: MagicMock,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test setup logs a warning when device metadata never arrives."""
+    mock_droplet.version_info_available.return_value = False
+
+    with patch("custom_components.droplet_plus.coordinator.FW_VERSION_TIMEOUT", 0):
+        mock_config_entry.add_to_hass(hass)
+        await hass.config_entries.async_setup(mock_config_entry.entry_id)
+        await hass.async_block_till_done()
+
+    assert mock_config_entry.state is ConfigEntryState.LOADED
+    assert "Timeout waiting for device metadata" in caplog.text
+
+
+async def test_shutdown_cancels_running_listener(
+    hass: HomeAssistant,
+    mock_setup_entry: MockConfigEntry,
+    mock_droplet: MagicMock,
+) -> None:
+    """Test shutdown stops and cancels a still-running listen task."""
+    coordinator = mock_setup_entry.runtime_data
+    coordinator._listen_task = hass.loop.create_task(asyncio.sleep(300))
+
+    await coordinator.async_shutdown()
+
+    assert coordinator._listen_task is None
+    mock_droplet.stop_listening.assert_awaited()
+
+    # Second shutdown is a no-op (no save timer, no listen task)
+    await coordinator.async_shutdown()
+    assert coordinator._listen_task is None
+
+
+async def test_all_period_boundaries_crossing(
+    hass: HomeAssistant,
+    mock_setup_entry: MockConfigEntry,
+    mock_droplet: MagicMock,
+) -> None:
+    """Test weekly, monthly, and yearly boundaries reset accumulators."""
+    coordinator = mock_setup_entry.runtime_data
+
+    past = dt_util.now() - timedelta(days=400)
+    coordinator._hourly_reset = past
+    coordinator._daily_reset = past
+    coordinator._weekly_reset = past
+    coordinator._monthly_reset = past
+    coordinator._yearly_reset = past
+
+    mock_droplet.get_volume_delta.return_value = 10.0
+    coordinator._on_update(None)
+
+    reset_names = [call[0][0] for call in mock_droplet.reset_accumulator.call_args_list]
+    for name in ("hourly", "daily", "weekly", "monthly", "yearly"):
+        assert name in reset_names
+
+    assert coordinator._baseline_weekly == 0.0
+    assert coordinator._baseline_monthly == 0.0
+    assert coordinator._baseline_yearly == 0.0
+    assert coordinator._weekly_reset > past
+    assert coordinator._monthly_reset > past
+    assert coordinator._yearly_reset > past
+
+
+async def test_hourly_boundary_without_min_flow(
+    hass: HomeAssistant,
+    mock_setup_entry: MockConfigEntry,
+) -> None:
+    """Test hourly boundary skips flow stats when no flow was tracked."""
+    coordinator = mock_setup_entry.runtime_data
+
+    coordinator._hourly_reset = dt_util.now() - timedelta(hours=2)
+    coordinator._hourly_min_flow = None
+    coordinator._check_period_boundaries(dt_util.now())
+
+    assert coordinator._hourly_flow_stats == []
+    assert len(coordinator._hourly_consumption) == 1
+
+
+async def test_stale_boundaries_on_restart(
+    hass: HomeAssistant,
+    mock_setup_entry: MockConfigEntry,
+) -> None:
+    """Test stale period boundaries are finalized after a restart."""
+    coordinator = mock_setup_entry.runtime_data
+
+    past = dt_util.now() - timedelta(days=400)
+    coordinator._hourly_reset = past
+    coordinator._daily_reset = past
+    coordinator._weekly_reset = past
+    coordinator._monthly_reset = past
+    coordinator._yearly_reset = past
+    coordinator._baseline_hourly = 1.0
+    coordinator._baseline_daily = 2.0
+    coordinator._baseline_weekly = 3.0
+    coordinator._baseline_monthly = 4.0
+    coordinator._baseline_yearly = 5.0
+
+    coordinator._handle_stale_boundaries()
+
+    assert coordinator._baseline_hourly == 0.0
+    assert coordinator._baseline_daily == 0.0
+    assert coordinator._baseline_weekly == 0.0
+    assert coordinator._baseline_monthly == 0.0
+    assert coordinator._baseline_yearly == 0.0
+    assert len(coordinator._hourly_consumption) == 1
+    assert coordinator._hourly_consumption[0][1] == pytest.approx(1.0)
+    assert len(coordinator._daily_consumption) == 1
+    assert coordinator._daily_consumption[0][1] == pytest.approx(2.0)
+    assert coordinator._yearly_reset > past
+
+
+async def test_leak_below_threshold_when_not_leaking(
+    hass: HomeAssistant,
+    mock_setup_entry: MockConfigEntry,
+) -> None:
+    """Test no leak event when min flow is below threshold and not leaking."""
+    coordinator = mock_setup_entry.runtime_data
+
+    now_ts = dt_util.now().timestamp()
+    coordinator._hourly_flow_stats = [(now_ts, 2.0, 0.0)]
+
+    coordinator._evaluate_leak()
+
+    assert coordinator.water_leak_detected is False
+    assert coordinator.pending_leak_event is None
+
+
+async def test_save_periodic(
+    hass: HomeAssistant,
+    mock_setup_entry: MockConfigEntry,
+) -> None:
+    """Test the periodic save callback persists data."""
+    coordinator = mock_setup_entry.runtime_data
+    coordinator._baseline_lifetime = 42.0
+
+    await coordinator._async_save_periodic(dt_util.now())
+
+    data = await coordinator._store.async_load()
+    assert data is not None
+    assert data["lifetime_volume"] == pytest.approx(42.0)
+
+
+async def test_parse_dt_fallback(
+    hass: HomeAssistant,
+) -> None:
+    """Test _parse_dt returns the default for missing or invalid input."""
+    default = dt_util.now()
+    assert DropletCoordinator._parse_dt(None, default) is default
+    assert DropletCoordinator._parse_dt("not-a-datetime", default) is default

@@ -149,6 +149,72 @@ async def test_zeroconf_flow(
     assert result["options"][CONF_WATER_LEAK_THRESHOLD] == 0.05
 
 
+async def test_zeroconf_confirm_cannot_connect(
+    hass: HomeAssistant,
+    mock_discovery: MagicMock,
+) -> None:
+    """Test zeroconf confirm step shows errors when connection fails."""
+    discovery_info = ZeroconfServiceInfo(
+        ip_address=TEST_HOST,
+        ip_addresses=[TEST_HOST],
+        hostname="droplet.local.",
+        name="Droplet-1234._droplet._tcp.local.",
+        port=TEST_PORT,
+        properties={},
+        type="_droplet._tcp.local.",
+    )
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={"source": config_entries.SOURCE_ZEROCONF},
+        data=discovery_info,
+    )
+    assert result["step_id"] == "confirm"
+
+    mock_discovery.try_connect = AsyncMock(return_value=False)
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        {CONF_TOKEN: TEST_TOKEN},
+    )
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "confirm"
+    assert result["errors"] == {"base": "cannot_connect"}
+
+
+async def test_confirm_abort_without_host(
+    hass: HomeAssistant,
+    mock_discovery: MagicMock,
+) -> None:
+    """Test confirm step aborts when discovery host is missing."""
+    discovery_info = ZeroconfServiceInfo(
+        ip_address=TEST_HOST,
+        ip_addresses=[TEST_HOST],
+        hostname="droplet.local.",
+        name="Droplet-1234._droplet._tcp.local.",
+        port=TEST_PORT,
+        properties={},
+        type="_droplet._tcp.local.",
+    )
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={"source": config_entries.SOURCE_ZEROCONF},
+        data=discovery_info,
+    )
+    assert result["step_id"] == "confirm"
+
+    # Simulate the discovered host disappearing before confirmation
+    flow = hass.config_entries.flow._progress[result["flow_id"]]
+    flow._host = None
+
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        {CONF_TOKEN: TEST_TOKEN},
+    )
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "unknown"
+
+
 async def test_options_flow(
     hass: HomeAssistant,
     mock_setup_entry,
@@ -184,3 +250,22 @@ async def test_reconfigure_flow(
     )
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "reconfigure_successful"
+
+
+async def test_reconfigure_flow_cannot_connect(
+    hass: HomeAssistant,
+    mock_setup_entry,
+    mock_discovery: MagicMock,
+) -> None:
+    """Test reconfigure flow shows errors when connection fails."""
+    result = await mock_setup_entry.start_reconfigure_flow(hass)
+    assert result["step_id"] == "reconfigure"
+
+    mock_discovery.try_connect = AsyncMock(return_value=False)
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        {CONF_HOST: "192.168.1.200", CONF_TOKEN: TEST_TOKEN},
+    )
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "reconfigure"
+    assert result["errors"] == {"base": "cannot_connect"}
