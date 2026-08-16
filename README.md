@@ -26,6 +26,13 @@ usage monitoring, consumption tracking, cost estimates, and leak detection.
 - Leak detection with configurable threshold
 - Device triggers for leak events
 - Diagnostics support
+- Metric and imperial units: volumes and flow rates follow your Home Assistant
+  unit system (gallons and gal/min on US customary installs)
+
+## Requirements
+
+- Home Assistant **2026.3.0** or newer
+- A Droplet device reachable on your local network
 
 <!-- BEGIN SHARED:repo-sync:installation -->
 <!-- Synced by repo-sync on 2026-07-24 -->
