@@ -28,7 +28,7 @@ vars:
 
   # ── Workflow tuning ──
   jsonlint_flags: ""
-  version_grep_pattern: "VERSION = "
+  version_grep_pattern: "VERSION: Final = "
 
   # ── Dependabot ──
   dependabot_interval: weekly
