@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import ClassVar
-
 from homeassistant.components.event import EventEntity
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -32,11 +30,11 @@ class DropletLeakEvent(CoordinatorEntity[DropletCoordinator], EventEntity):
 
     _attr_has_entity_name = True
     _attr_translation_key = KEY_WATER_LEAK
-    _attr_event_types: ClassVar[list[str]] = [EVENT_WATER_LEAK_DETECTED, EVENT_WATER_LEAK_CLEARED]
 
     def __init__(self, coordinator: DropletCoordinator) -> None:
         """Initialize the event entity."""
         super().__init__(coordinator)
+        self._attr_event_types = [EVENT_WATER_LEAK_DETECTED, EVENT_WATER_LEAK_CLEARED]
         self._attr_unique_id = f"{coordinator.unique_id}_{KEY_WATER_LEAK}_event"
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, coordinator.unique_id)},
