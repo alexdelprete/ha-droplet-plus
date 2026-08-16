@@ -22,6 +22,7 @@ from .conftest import TEST_DEVICE_ID, TEST_HOST, TEST_PORT, TEST_TOKEN
 async def test_user_flow_success(
     hass: HomeAssistant,
     mock_discovery: MagicMock,
+    mock_droplet: MagicMock,
 ) -> None:
     """Test successful user config flow."""
     result = await hass.config_entries.flow.async_init(
@@ -109,6 +110,7 @@ async def test_user_flow_already_configured(
 async def test_zeroconf_flow(
     hass: HomeAssistant,
     mock_discovery: MagicMock,
+    mock_droplet: MagicMock,
 ) -> None:
     """Test zeroconf discovery flow."""
     discovery_info = ZeroconfServiceInfo(
