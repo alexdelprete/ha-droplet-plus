@@ -4,12 +4,14 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
+import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.droplet_plus.const import DOMAIN
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr, entity_registry as er
+from homeassistant.util.unit_system import US_CUSTOMARY_SYSTEM
 
 
 async def test_flow_rate_sensor(
@@ -28,6 +30,39 @@ async def test_flow_rate_sensor(
     assert len(states) > 0
     state = states[0]
     assert state.state == "2.5"
+
+
+async def test_flow_sensors_use_gpm_on_us_customary_system(
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+    mock_droplet: MagicMock,
+) -> None:
+    """Test flow sensors are suggested in gal/min on US customary installs."""
+    hass.config.units = US_CUSTOMARY_SYSTEM
+    mock_config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(mock_config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    coordinator = mock_config_entry.runtime_data
+    coordinator._on_update(None)
+    await hass.async_block_till_done()
+
+    flow_keys = [
+        "flow_rate",
+        "avg_flow_1h",
+        "peak_flow_24h",
+        "peak_flow_7d",
+        "min_flow_24h",
+    ]
+    states = hass.states.async_all("sensor")
+    for key in flow_keys:
+        matches = [s for s in states if key in s.entity_id]
+        assert len(matches) == 1, f"Missing flow sensor {key}"
+        assert matches[0].attributes["unit_of_measurement"] == "gal/min"
+
+    # 2.5 L/min converted to gal/min
+    flow_state = next(s for s in states if "flow_rate" in s.entity_id)
+    assert float(flow_state.state) == pytest.approx(0.66, abs=0.01)
 
 
 async def test_volume_delta_sensor_disabled_by_default(

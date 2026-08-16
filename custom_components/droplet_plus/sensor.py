@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 
 from homeassistant.components.sensor import (
@@ -17,6 +17,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util.unit_system import US_CUSTOMARY_SYSTEM
 
 from . import DropletConfigEntry
 from .const import (
@@ -268,9 +269,20 @@ async def async_setup_entry(
 ) -> None:
     """Set up Droplet sensor entities."""
     coordinator = entry.runtime_data
-    async_add_entities(
-        DropletSensor(coordinator, description) for description in SENSOR_DESCRIPTIONS
-    )
+    descriptions = SENSOR_DESCRIPTIONS
+    if hass.config.units is US_CUSTOMARY_SYSTEM:
+        # HA's US customary unit system converts water volume (L -> gal) but has
+        # no volume_flow_rate conversion, so flow sensors would stay in L/min.
+        descriptions = tuple(
+            replace(
+                description,
+                suggested_unit_of_measurement=UnitOfVolumeFlowRate.GALLONS_PER_MINUTE,
+            )
+            if description.device_class is SensorDeviceClass.VOLUME_FLOW_RATE
+            else description
+            for description in descriptions
+        )
+    async_add_entities(DropletSensor(coordinator, description) for description in descriptions)
 
 
 class DropletSensor(CoordinatorEntity[DropletCoordinator], SensorEntity):
