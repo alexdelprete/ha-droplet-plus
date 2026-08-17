@@ -65,6 +65,8 @@ HOUR_SECONDS = 3600
 DAY_SECONDS = 86400
 WEEK_SECONDS = 604800
 
+ACCUMULATOR_PERIODS = ("hourly", "daily", "weekly", "monthly", "yearly", "lifetime")
+
 
 class DropletCoordinator(DataUpdateCoordinator[None]):
     """Coordinator for Droplet integration."""
@@ -463,6 +465,13 @@ class DropletCoordinator(DataUpdateCoordinator[None]):
                 await self._listen_task
             self._listen_task = None
 
+        # Deregister accumulators: pydroplet keeps them on a class-level list
+        # shared by every Droplet instance in the process, so leaving them
+        # behind lets other instances (e.g. the core droplet integration)
+        # keep feeding them and lets stale totals leak into the next setup.
+        for name in ACCUMULATOR_PERIODS:
+            self._droplet.remove_accumulator(name)
+
         await self._droplet.disconnect()
         await self._async_save_data()
 
@@ -583,14 +592,26 @@ class DropletCoordinator(DataUpdateCoordinator[None]):
             self._yearly_reset = now
 
     def _register_accumulators(self) -> None:
-        """Register pydroplet accumulators for all period volumes."""
+        """Register pydroplet accumulators for all period volumes.
+
+        pydroplet keeps accumulators on a class-level list shared by every
+        Droplet instance in the process, so an accumulator from a previous
+        setup can survive a reload with its volume intact (and add_accumulator
+        would silently keep it). Remove any leftover accumulator first so each
+        setup starts from a fresh, zeroed one.
+        """
         now = dt_util.now()
-        self._droplet.add_accumulator("hourly", next_hour(now))
-        self._droplet.add_accumulator("daily", next_day(now))
-        self._droplet.add_accumulator("weekly", next_week(now))
-        self._droplet.add_accumulator("monthly", next_month(now))
-        self._droplet.add_accumulator("yearly", next_year(now))
-        self._droplet.add_accumulator("lifetime", datetime(9999, 12, 31, tzinfo=now.tzinfo))
+        resets = {
+            "hourly": next_hour(now),
+            "daily": next_day(now),
+            "weekly": next_week(now),
+            "monthly": next_month(now),
+            "yearly": next_year(now),
+            "lifetime": datetime(9999, 12, 31, tzinfo=now.tzinfo),
+        }
+        for name in ACCUMULATOR_PERIODS:
+            self._droplet.remove_accumulator(name)
+            self._droplet.add_accumulator(name, resets[name])
 
     def _trim_buffers(self, now_ts: float) -> None:
         """Trim expired entries from statistics buffers."""

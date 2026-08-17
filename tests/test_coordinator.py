@@ -353,6 +353,39 @@ async def test_accumulators_registered_on_setup(
     assert "lifetime" in registered_names
 
 
+async def test_accumulators_removed_before_registration(
+    hass: HomeAssistant,
+    mock_setup_entry: MockConfigEntry,
+    mock_droplet: MagicMock,
+) -> None:
+    """Test setup removes any leftover accumulator before adding a fresh one.
+
+    pydroplet keeps accumulators on a class-level list shared by all Droplet
+    instances, so a stale accumulator from a previous setup could otherwise
+    survive a reload with its accumulated volume.
+    """
+    removed = [call[0][0] for call in mock_droplet.remove_accumulator.call_args_list]
+    added = [call[0][0] for call in mock_droplet.add_accumulator.call_args_list]
+    for name in ("hourly", "daily", "weekly", "monthly", "yearly", "lifetime"):
+        assert name in removed
+        assert name in added
+
+
+async def test_shutdown_removes_accumulators(
+    hass: HomeAssistant,
+    mock_setup_entry: MockConfigEntry,
+    mock_droplet: MagicMock,
+) -> None:
+    """Test shutdown deregisters all accumulators from the shared list."""
+    coordinator = mock_setup_entry.runtime_data
+    mock_droplet.remove_accumulator.reset_mock()
+
+    await coordinator.async_shutdown()
+
+    removed = {call[0][0] for call in mock_droplet.remove_accumulator.call_args_list}
+    assert removed == {"hourly", "daily", "weekly", "monthly", "yearly", "lifetime"}
+
+
 async def test_identity_properties(
     hass: HomeAssistant,
     mock_setup_entry: MockConfigEntry,
