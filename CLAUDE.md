@@ -106,7 +106,7 @@ In addition to the shared Do's and Don'ts below:
 - (Add integration-specific restrictions here)
 
 <!-- BEGIN SHARED:repo-sync -->
-<!-- Synced by repo-sync on 2026-07-24 -->
+<!-- Synced by repo-sync on 2026-08-20 -->
 
 <!--
 ==============================================================================
@@ -457,6 +457,9 @@ in manifest.json and const.py.
 
 1. `custom_components/droplet_plus/manifest.json` → `"version": "X.Y.Z"`
 1. `custom_components/droplet_plus/const.py` → `VERSION = "X.Y.Z"`
+
+> const.py must declare the version as plain `VERSION = "X.Y.Z"` — no `Final`
+> annotation — because the release workflow and repo-sync validate that exact form.
 
 ### Complete Release Workflow
 
