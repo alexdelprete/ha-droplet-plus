@@ -16,6 +16,7 @@ vars:
   component_dir: droplet_plus
   domain: droplet_plus
   default_branch: main
+  dev_alias: droplet                      # devbox: <alias>.code / <alias>.hass hostnames
 
   # ── 4noks workaround ──
   needs_symlink: false
