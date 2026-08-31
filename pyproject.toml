@@ -11,9 +11,6 @@ authors = [{ name = "alexdelprete" }]
 "Homepage" = "https://github.com/alexdelprete/ha-droplet-plus"
 "Bug Tracker" = "https://github.com/alexdelprete/ha-droplet-plus/issues"
 
-[tool.setuptools.packages.find]
-include = ["custom_components*"]
-
 [project.optional-dependencies]
 dev = [
     "homeassistant>=2024.12.0",
@@ -59,8 +56,14 @@ dev = [
 ]
 
 # <!-- BEGIN SHARED:repo-sync -->
-# Synced by repo-sync on 2026-07-24
+# Synced by repo-sync on 2026-08-31
 
+
+# Explicit package discovery: scripts/develop creates a config/ directory at the
+# repo root for the live HA dev instance, which makes setuptools' flat-layout
+# auto-discovery ambiguous (config/ vs custom_components/) and abort the build.
+[tool.setuptools.packages.find]
+include = ["custom_components*"]
 
 [tool.codespell]
 skip = "*.json"
