@@ -11,6 +11,9 @@ authors = [{ name = "alexdelprete" }]
 "Homepage" = "https://github.com/alexdelprete/ha-droplet-plus"
 "Bug Tracker" = "https://github.com/alexdelprete/ha-droplet-plus/issues"
 
+[tool.setuptools.packages.find]
+include = ["custom_components*"]
+
 [project.optional-dependencies]
 dev = [
     "homeassistant>=2024.12.0",
