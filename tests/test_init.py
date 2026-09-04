@@ -27,7 +27,9 @@ async def test_setup_entry_registers_device(
 ) -> None:
     """Test setup registers a device in the device registry."""
     device_registry = dr.async_get(hass)
-    device = device_registry.async_get_device(identifiers={(DOMAIN, mock_setup_entry.unique_id)})
+    device = device_registry.async_get_device_by_identifier(
+        (DOMAIN, mock_setup_entry.unique_id), mock_setup_entry.entry_id
+    )
     assert device is not None
     assert device.manufacturer == "LIXIL"
     assert device.model == "Droplet"

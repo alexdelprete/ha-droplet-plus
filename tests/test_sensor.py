@@ -223,7 +223,9 @@ async def test_sensor_device_association(
     dev_reg = dr.async_get(hass)
     ent_reg = er.async_get(hass)
 
-    device = dev_reg.async_get_device(identifiers={(DOMAIN, mock_setup_entry.unique_id)})
+    device = dev_reg.async_get_device_by_identifier(
+        (DOMAIN, mock_setup_entry.unique_id), mock_setup_entry.entry_id
+    )
     assert device is not None
 
     sensors = [
