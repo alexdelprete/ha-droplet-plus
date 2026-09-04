@@ -1,7 +1,7 @@
 # Droplet Plus
 
 <!-- BEGIN SHARED:repo-sync:badges -->
-<!-- Synced by repo-sync on 2026-07-24 -->
+<!-- Synced by repo-sync on 2026-09-04 -->
 
 [![GitHub Release](https://img.shields.io/github/v/release/alexdelprete/ha-droplet-plus?style=for-the-badge)](https://github.com/alexdelprete/ha-droplet-plus/releases)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-donate-yellow?style=for-the-badge&logo=buy-me-a-coffee)](https://www.buymeacoffee.com/alexdelprete)
@@ -31,11 +31,11 @@ usage monitoring, consumption tracking, cost estimates, and leak detection.
 
 ## Requirements
 
-- Home Assistant **2026.3.0** or newer
+- Home Assistant **2026.8.0** or newer
 - A Droplet device reachable on your local network
 
 <!-- BEGIN SHARED:repo-sync:installation -->
-<!-- Synced by repo-sync on 2026-07-24 -->
+<!-- Synced by repo-sync on 2026-09-04 -->
 
 ## Installation
 
@@ -68,7 +68,7 @@ usage monitoring, consumption tracking, cost estimates, and leak detection.
 1. Optionally configure water tariff and leak threshold in the integration options
 
 <!-- BEGIN SHARED:repo-sync:contributing -->
-<!-- Synced by repo-sync on 2026-07-24 -->
+<!-- Synced by repo-sync on 2026-09-04 -->
 
 ## Contributing
 
@@ -84,10 +84,13 @@ Contributions are welcome! Please follow these steps:
 
 Please ensure all CI checks pass before requesting a review.
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the development environment (devcontainer, tests, live
+Home Assistant instance) and the Windows caveats.
+
 <!-- END SHARED:repo-sync:contributing -->
 
 <!-- BEGIN SHARED:repo-sync:license -->
-<!-- Synced by repo-sync on 2026-07-24 -->
+<!-- Synced by repo-sync on 2026-09-04 -->
 
 ## License
 
