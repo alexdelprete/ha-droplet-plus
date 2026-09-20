@@ -17,6 +17,8 @@ vars:
   domain: droplet_plus
   default_branch: main
   dev_alias: droplet                      # devbox: <alias>.code / <alias>.hass hostnames
+  dev_host_port: ""
+  dev_autostart_hass: false
 
   # ── 4noks workaround ──
   needs_symlink: false
