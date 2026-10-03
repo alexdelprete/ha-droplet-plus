@@ -8,12 +8,7 @@ from typing import Any
 from pydroplet.droplet import DropletConnection, DropletDiscovery
 import voluptuous as vol
 
-from homeassistant.config_entries import (
-    ConfigEntry,
-    ConfigFlow,
-    ConfigFlowResult,
-    OptionsFlowWithConfigEntry,
-)
+from homeassistant.config_entries import ConfigEntry, ConfigFlow, ConfigFlowResult, OptionsFlow
 from homeassistant.const import CONF_HOST, CONF_PORT, CONF_TOKEN
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import (
@@ -64,7 +59,7 @@ class DropletConfigFlow(ConfigFlow, domain=DOMAIN):
         config_entry: ConfigEntry,
     ) -> DropletOptionsFlow:
         """Get the options flow for this handler."""
-        return DropletOptionsFlow(config_entry)
+        return DropletOptionsFlow()
 
     async def async_step_user(
         self,
@@ -267,7 +262,7 @@ class DropletConfigFlow(ConfigFlow, domain=DOMAIN):
             return None
 
 
-class DropletOptionsFlow(OptionsFlowWithConfigEntry):
+class DropletOptionsFlow(OptionsFlow):
     """Handle Droplet options flow."""
 
     async def async_step_init(
