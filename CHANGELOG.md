@@ -15,21 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   such as $0.0055/gal can be entered: setup and options accept any
   precision, and the Water tariff entity uses 0.0001 steps (Refs #20)
 - Minimum Home Assistant version raised to 2026.8.0 (was 2026.3.0)
-- pydroplet requirement raised to 2.4.1
-
-### Fixed
-
-- Consumption totals are no longer inflated when more than one Droplet
-  connection is active in the same Home Assistant instance (e.g. two
-  Droplet devices): pydroplet 2.4.1 keeps accumulators per connection
-  (Hydrific/pydroplet#7)
+- README: how to set up tiered water tariffs with a Utility Meter and a
+  template sensor (Refs #20)
 
 ### Known Issues
 
-- Running the core Droplet integration alongside Droplet Plus is still not
-  supported: core pins pydroplet 2.4.0, which lacks the fix above, while
-  Droplet Plus requires 2.4.1. Run only one of the two integrations until
-  core updates its pin.
+- Running the core Droplet integration alongside Droplet Plus still
+  double-counts Droplet Plus consumption. pydroplet 2.4.1 fixes the shared
+  state (Hydrific/pydroplet#7), but Home Assistant core still pins pydroplet
+  2.4.0, so Droplet Plus cannot require 2.4.1 yet. Run only one of the two
+  integrations until core updates its pin.
 
 ## [1.0.1] - 2026-08-17
 
