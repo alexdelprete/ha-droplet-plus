@@ -9,7 +9,7 @@ from custom_components.droplet_plus.const import (
     CONF_WATER_TARIFF,
     DOMAIN,
 )
-from homeassistant.components.number import ATTR_VALUE, SERVICE_SET_VALUE
+from homeassistant.components.number import ATTR_STEP, ATTR_VALUE, SERVICE_SET_VALUE
 from homeassistant.const import ATTR_ENTITY_ID, EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
@@ -79,6 +79,32 @@ async def test_set_tariff_value(
     await hass.async_block_till_done()
 
     assert mock_setup_entry.options[CONF_WATER_TARIFF] == 4.50
+
+
+async def test_set_sub_cent_tariff_value(
+    hass: HomeAssistant,
+    mock_setup_entry: MockConfigEntry,
+) -> None:
+    """Test water tariff accepts sub-cent values (e.g. $5.50 per 1000 gal)."""
+    ent_reg = er.async_get(hass)
+    tariff_entries = [
+        e for e in ent_reg.entities.values() if e.platform == DOMAIN and "tariff" in e.entity_id
+    ]
+    entity_id = tariff_entries[0].entity_id
+
+    state = hass.states.get(entity_id)
+    assert state is not None
+    assert state.attributes[ATTR_STEP] == 0.0001
+
+    await hass.services.async_call(
+        "number",
+        SERVICE_SET_VALUE,
+        {ATTR_ENTITY_ID: entity_id, ATTR_VALUE: 0.0055},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    assert mock_setup_entry.options[CONF_WATER_TARIFF] == 0.0055
 
 
 async def test_set_leak_threshold_value(

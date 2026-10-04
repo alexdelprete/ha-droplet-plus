@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Water tariff can now be set in steps of 0.0001 (was 0.01), so low
+  per-gallon rates such as $0.0055/gal can be entered (Refs #20)
+
 ## [1.0.1] - 2026-08-17
 
 ### Fixed

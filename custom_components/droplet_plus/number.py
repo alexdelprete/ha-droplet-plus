@@ -52,7 +52,7 @@ def _get_tariff_descriptions(
             entity_category=EntityCategory.CONFIG,
             native_min_value=0,
             native_max_value=100,
-            native_step=0.01,
+            native_step=0.0001,
             mode=NumberMode.BOX,
             native_unit_of_measurement=tariff_unit,
             option_key=CONF_WATER_TARIFF,

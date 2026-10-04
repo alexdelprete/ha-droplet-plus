@@ -177,7 +177,7 @@ class DropletConfigFlow(ConfigFlow, domain=DOMAIN):
                         NumberSelectorConfig(
                             min=0,
                             max=100,
-                            step=0.01,
+                            step=0.0001,
                             mode=NumberSelectorMode.BOX,
                         )
                     ),
@@ -286,7 +286,7 @@ class DropletOptionsFlow(OptionsFlow):
                         NumberSelectorConfig(
                             min=0,
                             max=100,
-                            step=0.01,
+                            step=0.0001,
                             mode=NumberSelectorMode.BOX,
                         )
                     ),
