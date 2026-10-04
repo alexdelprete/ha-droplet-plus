@@ -7,11 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-10-04
+
 ### Changed
 
 - Water tariff is no longer limited to 0.01 steps, so low per-gallon rates
   such as $0.0055/gal can be entered: setup and options accept any
   precision, and the Water tariff entity uses 0.0001 steps (Refs #20)
+- Minimum Home Assistant version raised to 2026.8.0 (was 2026.3.0)
+- pydroplet requirement raised to 2.4.1
+
+### Fixed
+
+- Consumption totals are no longer inflated when more than one Droplet
+  connection is active in the same Home Assistant instance (e.g. two
+  Droplet devices): pydroplet 2.4.1 keeps accumulators per connection
+  (Hydrific/pydroplet#7)
+
+### Known Issues
+
+- Running the core Droplet integration alongside Droplet Plus is still not
+  supported: core pins pydroplet 2.4.0, which lacks the fix above, while
+  Droplet Plus requires 2.4.1. Run only one of the two integrations until
+  core updates its pin.
 
 ## [1.0.1] - 2026-08-17
 
@@ -66,7 +84,8 @@ First beta release of the Droplet Plus integration.
 - Config flow with manual and Zeroconf setup
 - Options flow for tariff and leak threshold configuration
 
-[Unreleased]: https://github.com/alexdelprete/ha-droplet-plus/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/alexdelprete/ha-droplet-plus/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/alexdelprete/ha-droplet-plus/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/alexdelprete/ha-droplet-plus/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/alexdelprete/ha-droplet-plus/compare/v0.1.0-beta.1...v1.0.0
 [0.1.0-beta.1]: https://github.com/alexdelprete/ha-droplet-plus/releases/tag/v0.1.0-beta.1
