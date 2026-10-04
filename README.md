@@ -67,6 +67,54 @@ usage monitoring, consumption tracking, cost estimates, and leak detection.
 1. Enter the device host and pairing code when prompted
 1. Optionally configure water tariff and leak threshold in the integration options
 
+### Tiered water tariffs
+
+The integration's cost sensors use a single flat tariff, and the monthly totals reset on the 1st of each month. If
+your utility charges by usage bands or bills on a different day, build the cost with two Home Assistant helpers
+instead. Both are created from the UI under **Settings** > **Devices & Services** > **Helpers** > **Create helper**.
+
+**1. A meter that resets on your billing day.** Choose **Utility Meter** and set:
+
+- **Name**: `Water billing cycle`
+- **Input sensor**: the Droplet Plus **Water consumption lifetime** sensor
+- **Meter reset cycle**: Monthly
+- **Meter reset offset**: the number of days after the 1st that your billing cycle starts, e.g. `11` for a cycle that
+  starts on the 12th (maximum 28)
+
+The meter counts in the same unit as the source sensor: gallons on US customary installs, liters on metric ones.
+
+**2. A tiered cost sensor.** Choose **Template** > **Template a sensor** and set:
+
+- **Name**: `Water bill current cycle`
+- **Unit of measurement**: your currency, e.g. `USD` or `EUR`
+- **Device class**: Monetary
+- **State class**: Total
+- **State template**:
+
+```jinja
+{% set used = states('sensor.water_billing_cycle') | float(0) %}
+{% set tiers = [[5000, 0.0045], [10000, 0.005], [20000, 0.0055], [none, 0.007]] %}
+{% set ns = namespace(cost=0, prev=0) %}
+{% for limit, rate in tiers %}
+  {% if used > ns.prev %}
+    {% set upper = used if limit is none else [used, limit] | min %}
+    {% set ns.cost = ns.cost + (upper - ns.prev) * rate %}
+  {% endif %}
+  {% if limit is not none %}{% set ns.prev = limit %}{% endif %}
+{% endfor %}
+{{ ns.cost | round(2) }}
+```
+
+Each entry in `tiers` is `[upper limit of the band, price per unit]`, and the last band uses `none` for no upper limit.
+Each band is charged at its own rate: with the example above, 12,000 gal costs
+5,000 × 0.0045 + 5,000 × 0.005 + 2,000 × 0.0055 = 58.50. If your utility instead charges all the water at the rate of
+the highest band reached, the template needs to be adapted.
+
+On metric installs the meter counts liters. To use bands and prices per m³, change the first line to
+`{% set used = states('sensor.water_billing_cycle') | float(0) / 1000 %}`.
+
+If you use this sensor, you can leave the integration's own water tariff at `0`; its cost sensors then report zero.
+
 <!-- BEGIN SHARED:repo-sync:contributing -->
 <!-- Synced by repo-sync on 2026-09-04 -->
 
