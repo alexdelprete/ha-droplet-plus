@@ -260,6 +260,9 @@ class DropletConfigFlow(ConfigFlow, domain=DOMAIN):
             _LOGGER.exception("Error connecting to Droplet at %s:%s", host, port)
             errors["base"] = "cannot_connect"
             return None
+        finally:
+            # try_connect leaves the validation WebSocket open; release it like core does
+            await discovery.close()
 
 
 class DropletOptionsFlow(OptionsFlow):
