@@ -130,6 +130,7 @@ def mock_discovery():
         instance = mock_cls.return_value
         instance.try_connect = AsyncMock(return_value=True)
         instance.get_device_id = AsyncMock(return_value=TEST_DEVICE_ID)
+        instance.close = AsyncMock()
         instance.is_valid.return_value = True
         yield instance
 
