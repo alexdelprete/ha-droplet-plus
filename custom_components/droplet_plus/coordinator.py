@@ -19,7 +19,7 @@ from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.issue_registry import (
     IssueSeverity,
     async_create_issue,
-    async_delete_issue,
+    async_refresh_issues,
 )
 from homeassistant.helpers.storage import Store
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
@@ -653,14 +653,6 @@ class DropletCoordinator(DataUpdateCoordinator[None]):
                 min_flow,
                 threshold,
             )
-            async_create_issue(
-                self.hass,
-                DOMAIN,
-                EVENT_WATER_LEAK_DETECTED,
-                is_fixable=False,
-                severity=IssueSeverity.WARNING,
-                translation_key=EVENT_WATER_LEAK_DETECTED,
-            )
 
         elif min_flow <= threshold and was_leaking:
             self._water_leak_detected = False
@@ -669,7 +661,36 @@ class DropletCoordinator(DataUpdateCoordinator[None]):
                 {"min_flow": min_flow, "threshold": threshold},
             )
             _LOGGER.info("Water leak cleared: min flow %.3f L/min", min_flow)
-            async_delete_issue(self.hass, DOMAIN, EVENT_WATER_LEAK_DETECTED)
+
+        self._async_refresh_leak_issue()
+
+    @property
+    def leak_issue_id(self) -> str:
+        """Return the id of this entry's water-leak repair issue."""
+        return f"{EVENT_WATER_LEAK_DETECTED}_{self.config_entry.entry_id}"
+
+    @callback
+    def _async_refresh_leak_issue(self) -> None:
+        """Keep this entry's water-leak repair issue in step with the leak state.
+
+        The issue is linked to the config entry (Home Assistant 2026.11: shown on
+        its page, deleted with it) and its id carries the entry id, so two Droplet
+        devices no longer share one issue. async_refresh_issues deletes it on exit
+        unless it was created inside the block. Because the leak flag is restored
+        from the store, this also re-raises the issue after a restart while a leak
+        is still active (the issue itself is not persisted).
+        """
+        with async_refresh_issues(self.hass, DOMAIN, issue_ids=[self.leak_issue_id]):
+            if self._water_leak_detected:
+                async_create_issue(
+                    self.hass,
+                    DOMAIN,
+                    self.leak_issue_id,
+                    config_entry_id=self.config_entry.entry_id,
+                    is_fixable=False,
+                    severity=IssueSeverity.WARNING,
+                    translation_key=EVENT_WATER_LEAK_DETECTED,
+                )
 
     # -- Persistence --
 
