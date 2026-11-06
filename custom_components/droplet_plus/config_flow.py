@@ -5,8 +5,8 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+import probatio
 from pydroplet.droplet import DropletConnection, DropletDiscovery
-import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, ConfigFlowResult, OptionsFlow
 from homeassistant.const import CONF_HOST, CONF_PORT, CONF_TOKEN
@@ -33,10 +33,12 @@ from .helpers import normalize_pairing_code
 
 _LOGGER = logging.getLogger(__name__)
 
-STEP_USER_DATA_SCHEMA = vol.Schema(
+STEP_USER_DATA_SCHEMA = probatio.Schema(
     {
-        vol.Required(CONF_HOST): TextSelector(TextSelectorConfig(type=TextSelectorType.TEXT)),
-        vol.Required(CONF_TOKEN): TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD)),
+        probatio.Required(CONF_HOST): TextSelector(TextSelectorConfig(type=TextSelectorType.TEXT)),
+        probatio.Required(CONF_TOKEN): TextSelector(
+            TextSelectorConfig(type=TextSelectorType.PASSWORD)
+        ),
     }
 )
 
@@ -135,9 +137,9 @@ class DropletConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="confirm",
-            data_schema=vol.Schema(
+            data_schema=probatio.Schema(
                 {
-                    vol.Required(CONF_TOKEN): TextSelector(
+                    probatio.Required(CONF_TOKEN): TextSelector(
                         TextSelectorConfig(type=TextSelectorType.PASSWORD)
                     ),
                 }
@@ -168,9 +170,9 @@ class DropletConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="options",
-            data_schema=vol.Schema(
+            data_schema=probatio.Schema(
                 {
-                    vol.Required(
+                    probatio.Required(
                         CONF_WATER_TARIFF,
                         default=DEFAULT_WATER_TARIFF,
                     ): NumberSelector(
@@ -181,7 +183,7 @@ class DropletConfigFlow(ConfigFlow, domain=DOMAIN):
                             mode=NumberSelectorMode.BOX,
                         )
                     ),
-                    vol.Required(
+                    probatio.Required(
                         CONF_WATER_LEAK_THRESHOLD,
                         default=DEFAULT_WATER_LEAK_THRESHOLD,
                     ): NumberSelector(
@@ -226,13 +228,13 @@ class DropletConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="reconfigure",
-            data_schema=vol.Schema(
+            data_schema=probatio.Schema(
                 {
-                    vol.Required(
+                    probatio.Required(
                         CONF_HOST,
                         default=reconfigure_entry.data.get(CONF_HOST),
                     ): TextSelector(TextSelectorConfig(type=TextSelectorType.TEXT)),
-                    vol.Required(CONF_TOKEN): TextSelector(
+                    probatio.Required(CONF_TOKEN): TextSelector(
                         TextSelectorConfig(type=TextSelectorType.PASSWORD)
                     ),
                 }
@@ -280,9 +282,9 @@ class DropletOptionsFlow(OptionsFlow):
 
         return self.async_show_form(
             step_id="init",
-            data_schema=vol.Schema(
+            data_schema=probatio.Schema(
                 {
-                    vol.Required(
+                    probatio.Required(
                         CONF_WATER_TARIFF,
                         default=current.get(CONF_WATER_TARIFF, DEFAULT_WATER_TARIFF),
                     ): NumberSelector(
@@ -293,7 +295,7 @@ class DropletOptionsFlow(OptionsFlow):
                             mode=NumberSelectorMode.BOX,
                         )
                     ),
-                    vol.Required(
+                    probatio.Required(
                         CONF_WATER_LEAK_THRESHOLD,
                         default=current.get(
                             CONF_WATER_LEAK_THRESHOLD,

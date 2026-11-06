@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+import probatio
 import pytest
-import voluptuous as vol
 
 from custom_components.droplet_plus.const import DOMAIN
 from custom_components.droplet_plus.device_trigger import (
@@ -41,7 +41,7 @@ def test_trigger_schema_valid() -> None:
 
 def test_trigger_schema_invalid_type() -> None:
     """Test the trigger schema rejects an unknown trigger type."""
-    with pytest.raises(vol.Invalid):
+    with pytest.raises(probatio.Invalid):
         TRIGGER_SCHEMA(
             {
                 "platform": "device",
