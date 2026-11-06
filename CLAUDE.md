@@ -106,7 +106,7 @@ In addition to the shared Do's and Don'ts below:
 - (Add integration-specific restrictions here)
 
 <!-- BEGIN SHARED:repo-sync -->
-<!-- Synced by repo-sync on 2026-09-26 -->
+<!-- Synced by repo-sync on 2026-11-06 -->
 
 <!--
 ==============================================================================
@@ -291,7 +291,7 @@ These repos are standardized on the **Python 3.14+** toolchain:
 - `pyproject.toml`: `requires-python = ">=3.14.2"` (matches Home Assistant
   core's own floor)
 - `[tool.ruff]`: `target-version = "py314"`
-- Minimum supported Home Assistant core: **2026.8.0** — the
+- Minimum supported Home Assistant core: **2026.10.0** — the
   first HA release with `DeviceRegistry.async_get_device_by_identifier`,
   which replaces the `async_get_device` lookup deprecated in 2026.9.
   `hacs.json` is rendered from the same value, so HACS users on older HA
@@ -368,6 +368,9 @@ ty and ruff are pre-1.0 / fast-moving and add rules between releases; unpinned t
 turn CI red on code that passes locally. The venv copies of ruff and ty only serve
 the VS Code extensions; `repo-sync` rewrites their `pyproject.toml` entries to the same
 pins on every sync (and dependabot ignores them), so the editor matches CI too.
+`homeassistant-stubs` is pinned the same way, to the Home Assistant release
+`pytest-homeassistant-custom-component` installs (2026.9.3),
+so ty checks against the HA the tests run on rather than the newest stubs on PyPI.
 
 ## Pre-Commit Checks (MANDATORY)
 

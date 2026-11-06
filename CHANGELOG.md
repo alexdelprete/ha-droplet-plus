@@ -14,15 +14,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   2.5.0 also brings longer connection timeouts and properly closed connections.
 - The config flow now closes the validation connection after checking the pairing
   code, as the core integration does
+- Minimum Home Assistant version raised to 2026.10.0 (was 2026.8.0): earlier
+  releases pin pydroplet 2.4.0 in core, which conflicts with this integration's
+  requirement
 
 ### Fixed
 
 - Running the core Droplet integration alongside Droplet Plus no longer
   double-counts Droplet Plus consumption: pydroplet 2.4.1+ keeps volume
   accumulators per instance (Hydrific/pydroplet#7). This closes the Known Issue
-  listed under 1.0.1 and 1.0.2. It holds on Home Assistant 2026.10+, where core
-  also runs pydroplet 2.5.0; on 2026.8 and 2026.9 core still pins 2.4.0, so keep
-  running only one of the two integrations there
+  listed under 1.0.1 and 1.0.2 (core runs pydroplet 2.5.0 as well from 2026.10,
+  the new minimum version)
 
 ## [1.0.2] - 2026-10-04
 

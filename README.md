@@ -31,7 +31,7 @@ usage monitoring, consumption tracking, cost estimates, and leak detection.
 
 ## Requirements
 
-- Home Assistant **2026.8.0** or newer
+- Home Assistant **2026.10.0** or newer
 - A Droplet device reachable on your local network
 
 <!-- BEGIN SHARED:repo-sync:installation -->
