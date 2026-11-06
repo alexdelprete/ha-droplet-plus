@@ -1,7 +1,7 @@
 # Droplet Plus
 
 <!-- BEGIN SHARED:repo-sync:badges -->
-<!-- Synced by repo-sync on 2026-09-04 -->
+<!-- Synced by repo-sync on 2026-11-06 -->
 
 [![GitHub Release](https://img.shields.io/github/v/release/alexdelprete/ha-droplet-plus?style=for-the-badge)](https://github.com/alexdelprete/ha-droplet-plus/releases)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-donate-yellow?style=for-the-badge&logo=buy-me-a-coffee)](https://www.buymeacoffee.com/alexdelprete)
@@ -35,19 +35,22 @@ usage monitoring, consumption tracking, cost estimates, and leak detection.
 - A Droplet device reachable on your local network
 
 <!-- BEGIN SHARED:repo-sync:installation -->
-<!-- Synced by repo-sync on 2026-09-04 -->
+<!-- Synced by repo-sync on 2026-11-06 -->
 
 ## Installation
 
-### HACS (Recommended)
+### Marketplace (Recommended)
 
-1. Open HACS in your Home Assistant instance
-1. Click on "Integrations"
-1. Click the three dots menu in the top right corner
-1. Select "Custom repositories"
-1. Add `https://github.com/alexdelprete/ha-droplet-plus` as an Integration
-1. Click "Download" and install the integration
-1. Restart Home Assistant
+Home Assistant 2026.11 and later ship the Marketplace, which replaces HACS. If this
+integration is not listed in the catalog, add the repository by link:
+
+1. Open **Settings** → **Marketplace** in your Home Assistant instance (administrators only;
+   custom repositories require a GitHub connection)
+1. Select **Add from link** in the upper-right corner
+1. Enter `https://github.com/alexdelprete/ha-droplet-plus` and select **Add**
+1. Open the repository page, select **Install**, review the version and confirm
+1. Restart Home Assistant when a repair asks you to, then add the integration under
+   **Settings** → **Devices & services**
 
 ### Manual Installation
 
@@ -116,7 +119,7 @@ On metric installs the meter counts liters. To use bands and prices per m³, cha
 If you use this sensor, you can leave the integration's own water tariff at `0`; its cost sensors then report zero.
 
 <!-- BEGIN SHARED:repo-sync:contributing -->
-<!-- Synced by repo-sync on 2026-09-04 -->
+<!-- Synced by repo-sync on 2026-11-06 -->
 
 ## Contributing
 
@@ -138,7 +141,7 @@ Home Assistant instance) and the Windows caveats.
 <!-- END SHARED:repo-sync:contributing -->
 
 <!-- BEGIN SHARED:repo-sync:license -->
-<!-- Synced by repo-sync on 2026-09-04 -->
+<!-- Synced by repo-sync on 2026-11-06 -->
 
 ## License
 

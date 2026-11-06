@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 
 from custom_components.droplet_plus.const import DOMAIN
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass
