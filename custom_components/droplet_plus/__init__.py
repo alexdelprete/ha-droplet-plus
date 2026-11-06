@@ -24,8 +24,8 @@ PLATFORMS = [
 type DropletConfigEntry = ConfigEntry[DropletCoordinator]
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: DropletConfigEntry) -> bool:
-    """Set up Droplet from a config entry."""
+async def async_setup_entry(hass: HomeAssistant, entry: DropletConfigEntry) -> None:
+    """Set up Droplet from a config entry; failure raises ConfigEntryNotReady."""
     coordinator = DropletCoordinator(hass, entry)
 
     try:
@@ -40,9 +40,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: DropletConfigEntry) -> b
     entry.runtime_data = coordinator
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-    return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: DropletConfigEntry) -> bool:
-    """Unload a config entry."""
-    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+async def async_unload_entry(hass: HomeAssistant, entry: DropletConfigEntry) -> None:
+    """Unload a config entry, raising ConfigEntryError if a platform fails to unload."""
+    await hass.config_entries.async_unload_platforms_or_raise(entry, PLATFORMS)

@@ -1,12 +1,14 @@
 {
   "domain": "droplet_plus",
   "name": "Droplet Plus",
+  "categories": ["water.meters_leak_detection"],
   "codeowners": ["@alexdelprete"],
   "config_flow": true,
   "documentation": "https://github.com/alexdelprete/ha-droplet-plus",
   "integration_type": "device",
   "iot_class": "local_push",
   "issue_tracker": "https://github.com/alexdelprete/ha-droplet-plus/issues",
+  "quality_scale": "gold",
   "requirements": ["pydroplet~=2.5.0"],
   "version": "1.0.3",
   "zeroconf": ["_droplet._tcp.local."]
